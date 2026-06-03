@@ -1333,42 +1333,34 @@ function previewSmart(inputId, previewId){
 // Replaces blind <img> injection with smart media routing.
 // Called by renderProductGrid() for every product card.
 // ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// BULLETPROOF PRODUCT MEDIA RENDERING LAYER
+// ═══════════════════════════════════════════════════════════════════
 const renderProductMedia = (mediaPath) => {
-  // Fallback gradient if no path provided
   if (!mediaPath) {
-    return `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1e1e2f,#0a0a12);display:flex;align-items:center;justify-content:center;color:#2a2a3a;font-size:28px"><i class="fa-solid fa-sparkles"></i></div>`;
+    return `<div style="height:100%; width:100%; background:linear-gradient(135deg,#1e1e2f,#0a0a12)"></div>`;
   }
-
-  const cleanPath = mediaPath.trim().toLowerCase();
-  const isVideo = (
-    cleanPath.endsWith('.mp4')  ||
-    cleanPath.endsWith('.webm') ||
-    cleanPath.endsWith('.mov')  ||
-    cleanPath.includes('video')
-  );
-
+  
+  const cleanPath = mediaPath.trim();
+  const lowerPath = cleanPath.toLowerCase();
+  
+  // Detect if video asset format
+  const isVideo = lowerPath.endsWith('.mp4') || 
+                  lowerPath.endsWith('.webm') || 
+                  lowerPath.endsWith('.mov') || 
+                  lowerPath.includes('video');
+  
   if (isVideo) {
-    // Video node — autoplay, muted, loop for silent ambient preview
-    return `<video
-      src="${mediaPath}"
-      loop
-      muted
-      autoplay
-      playsinline
-      style="width:100%;height:100%;object-fit:cover;display:block;"
-      onerror="this.parentNode.style.background='linear-gradient(135deg,#111827,#030712)';this.remove();">
-    </video>`;
+    return `<video src="${cleanPath}" loop muted autoplay playsinline style="width:100%; height:100%; object-fit:cover; display:block;" 
+              onerror="console.warn('Video failed to load');">
+            </video>`;
   } else {
-    // Image node — lazy loaded, graceful fallback on error
-    return `<img
-      src="${mediaPath}"
-      alt="Product Asset"
-      loading="lazy"
-      style="width:100%;height:100%;object-fit:cover;display:block;"
-      onerror="this.parentNode.style.background='linear-gradient(135deg,#1e1e2f,#0a0a12)';this.style.display='none';">`;
+    // Standardize external Postimg structures and maintain visibility safely 
+    return `<img src="${cleanPath}" alt="Product Display" style="width:100%; height:100%; object-fit:cover; display:block;"
+              onload="this.style.opacity='1';"
+              onerror="console.warn('Image handshake delay active'); this.style.opacity='0.6';">`;
   }
 };
-
 // ═══════════════════════════════════════════════════════════════════
 // HERO SLIDER
 // ═══════════════════════════════════════════════════════════════════
@@ -1493,7 +1485,16 @@ async function openBlogModal(id){
   const post = blogPosts.find(b=>b.id===id); if(!post) return;
   const imgSrc = await resolveSrc(post.img);
   const modalImg = document.getElementById('blogModalImg');
-  if(imgSrc){ modalImg.src=imgSrc; modalImg.style.display='block'; } else { modalImg.style.display='none'; }
+  // Keep this part just as it is:
+img.onload = () => {
+    img.style.opacity = '1';
+};
+
+// This is your newly pasted safe block:
+img.onerror = () => {
+    console.warn(`Asset handshake delay at: ${img.src}`);
+    img.style.opacity = '0.7'; 
+};
   document.getElementById('blogModalTag').textContent     = post.tag||'Story';
   document.getElementById('blogModalDate').textContent    = post.date||'';
   document.getElementById('blogModalTitle').textContent   = post.title;
