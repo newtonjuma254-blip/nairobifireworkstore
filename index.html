@@ -1032,6 +1032,8 @@ textarea.a-input{resize:vertical;min-height:52px}
 // CONFIG
 // ═══════════════════════════════════════════════════════════════════
 const DEFAULT_PW  = 'mileshigh2026';
+const SB_URL = 'https://stxnyfjkqehgqyukbfud.supabase.co';
+const SB_KEY = 'sb_publishable_lKN9Z646xjjTLoi3ksfuzA_A_UNZ...';
 const DEFAULT_WA  = '254700000000';
 const LS_KEY      = 'mh_state_v5';
 const IDB_NAME    = 'MilesHighDB';
@@ -1247,15 +1249,44 @@ function saveState(){
   }catch(e){ showToast('⚠ Storage quota reached — use URLs for large media.'); }
 }
 
-function loadState(){
+async function loadState(){
+  try{
+    const res = await fetch(SB_URL+'/rest/v1/products?select=*&order=id.asc',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    if(res.ok){
+      const rows = await res.json();
+      if(rows.length){
+        products = rows.map(r=>({
+          id:r.id, name:r.name, category:r.category, price:r.price,
+          badge:r.badge||'', imgDay:r.img_day||'', imgNight:r.img_night||'',
+          videoUrl:r.video_url||'', mode:r.mode||'day'
+        }));
+        const raw = localStorage.getItem(LS_KEY);
+        if(raw){
+          const s = JSON.parse(raw);
+          categories = s.categories || JSON.parse(JSON.stringify(DEF_CATEGORIES));
+          heroMedia  = s.heroMedia  || JSON.parse(JSON.stringify(DEF_HERO_MEDIA));
+          blogPosts  = s.blogPosts  || JSON.parse(JSON.stringify(DEF_BLOG));
+          if(s.heroTitle) setTimeout(()=>{ const el=document.getElementById('heroTitle'); if(el) el.innerHTML=s.heroTitle; },100);
+          if(s.heroSub)   setTimeout(()=>{ const el=document.getElementById('heroSub');   if(el) el.textContent=s.heroSub; },100);
+        } else {
+          categories = JSON.parse(JSON.stringify(DEF_CATEGORIES));
+          heroMedia  = JSON.parse(JSON.stringify(DEF_HERO_MEDIA));
+          blogPosts  = JSON.parse(JSON.stringify(DEF_BLOG));
+        }
+        return;
+      }
+    }
+  }catch(e){ console.warn('Supabase fetch failed, using localStorage',e); }
   try{
     const raw = localStorage.getItem(LS_KEY);
     if(!raw){ resetToDefaults(); return; }
     const s = JSON.parse(raw);
-    products   = s.products   ? s.products.map(p=>({mode:'day',imgNight:'',...p}))  : JSON.parse(JSON.stringify(DEF_PRODUCTS));
-    categories = s.categories ? s.categories                                          : JSON.parse(JSON.stringify(DEF_CATEGORIES));
-    heroMedia  = s.heroMedia  ? s.heroMedia                                           : JSON.parse(JSON.stringify(DEF_HERO_MEDIA));
-    blogPosts  = s.blogPosts  ? s.blogPosts                                           : JSON.parse(JSON.stringify(DEF_BLOG));
+    products   = s.products   ? s.products.map(p=>({mode:'day',imgNight:'',...p})) : JSON.parse(JSON.stringify(DEF_PRODUCTS));
+    categories = s.categories || JSON.parse(JSON.stringify(DEF_CATEGORIES));
+    heroMedia  = s.heroMedia  || JSON.parse(JSON.stringify(DEF_HERO_MEDIA));
+    blogPosts  = s.blogPosts  || JSON.parse(JSON.stringify(DEF_BLOG));
     if(s.heroTitle) setTimeout(()=>{ const el=document.getElementById('heroTitle'); if(el) el.innerHTML=s.heroTitle; },100);
     if(s.heroSub)   setTimeout(()=>{ const el=document.getElementById('heroSub');   if(el) el.textContent=s.heroSub; },100);
   }catch(e){ resetToDefaults(); }
@@ -1717,19 +1748,28 @@ async function openEditModal(id){
   } else prev.classList.remove('show');
   document.getElementById('editOverlay').classList.add('open');
 }
-function saveEditProduct(){
+async function saveEditProduct(){
   const id=parseInt(document.getElementById('editProdId').value);
   const p=products.find(x=>x.id===id); if(!p) return;
   const nameVal=document.getElementById('editName').value.trim();
   const priceVal=document.getElementById('editPrice').value;
-  p.name     = nameVal  || p.name;
+  p.name     = nameVal || p.name;
   p.price    = priceVal==='' ? p.price : Number(priceVal);
   p.category = document.getElementById('editCat').value;
   p.badge    = document.getElementById('editBadge').value.trim();
   p.imgDay   = document.getElementById('editImgUrl').value.trim();
   p.videoUrl = document.getElementById('editVideoUrl').value.trim();
   document.getElementById('editOverlay').classList.remove('open');
-  applyFilters(); saveState(); showToast(`"${p.name}" updated!`);
+  saveState();
+  try{
+    await fetch(SB_URL+'/rest/v1/products?id=eq.'+p.id,{
+      method:'PATCH',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({name:p.name,category:p.category,price:p.price,badge:p.badge,img_day:p.imgDay,video_url:p.videoUrl})
+    });
+    showToast('"'+p.name+'" saved to cloud!');
+  }catch(e){ showToast('Saved locally — cloud sync failed.'); }
+  applyFilters();
 }
 function closeEditModal(e){ if(!e||e.target===document.getElementById('editOverlay')) document.getElementById('editOverlay').classList.remove('open'); }
 
@@ -1924,7 +1964,18 @@ function renderAdminInv(){
     el.appendChild(row);
   });
 }
-function deleteProduct(id){ if(!confirm('Delete this product?')) return; products=products.filter(p=>p.id!==id); applyFilters(); renderAdminInv(); saveState(); showToast('Product removed.'); }
+async function deleteProduct(id){
+  if(!confirm('Delete this product?')) return;
+  products=products.filter(p=>p.id!==id);
+  saveState();
+  try{
+    await fetch(SB_URL+'/rest/v1/products?id=eq.'+id,{
+      method:'DELETE',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+  }catch(e){ console.warn('Cloud delete failed',e); }
+  applyFilters(); renderAdminInv(); showToast('Product removed.');
+}
 async function injectProduct(){
   const name=document.getElementById('aPName').value.trim();
   const priceVal=document.getElementById('aPPrice').value;
@@ -1934,10 +1985,20 @@ async function injectProduct(){
   const badge=document.getElementById('aPBadge').value.trim();
   const img=document.getElementById('aPImg').value.trim();
   const video=document.getElementById('aPVideo').value.trim();
-  products.push({id:Date.now(),name,category:cat,price,badge,mode:'day',imgDay:img,imgNight:'',videoUrl:video});
+  const newProduct={id:Date.now(),name,category:cat,price,badge,mode:'day',imgDay:img,imgNight:'',videoUrl:video};
+  products.push(newProduct);
   ['aPName','aPPrice','aPBadge','aPImg','aPVideo'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   const prev=document.getElementById('aPImgPreview'); if(prev){prev.src='';prev.classList.remove('show');}
-  applyFilters(); renderAdminInv(); saveState(); showToast(`"${name}" added!`);
+  saveState();
+  try{
+    await fetch(SB_URL+'/rest/v1/products',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({id:newProduct.id,name,category:cat,price,badge,img_day:img,video_url:video,mode:'day'})
+    });
+    showToast('"'+name+'" added to cloud!');
+  }catch(e){ showToast('"'+name+'" added locally — cloud sync failed.'); }
+  applyFilters(); renderAdminInv();
 }
 
 // Password
