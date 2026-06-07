@@ -1718,21 +1718,46 @@ async function openEditModal(id){
   } else prev.classList.remove('show');
   document.getElementById('editOverlay').classList.add('open');
 }
-function saveEditProduct(){
-  const id=parseInt(document.getElementById('editProdId').value);
-  const p=products.find(x=>x.id===id); if(!p) return;
-  p.name     = document.getElementById('editName').value.trim()  || p.name;
-  p.price    = parseInt(document.getElementById('editPrice').value)  || p.price;
-  p.category = document.getElementById('editCat').value;
-  p.badge    = document.getElementById('editBadge').value.trim();
-  const newImg = document.getElementById('editImgUrl').value.trim();
-  if(newImg) p.imgDay=newImg;
-  p.videoUrl = document.getElementById('editVideoUrl').value.trim();
-  document.getElementById('editOverlay').classList.remove('open');
-  applyFilters(); saveState(); showToast(`"${p.name}" updated!`);
-}
-function closeEditModal(e){ if(!e||e.target===document.getElementById('editOverlay')) document.getElementById('editOverlay').classList.remove('open'); }
+function addNewProduct(){
+  const name = document.getElementById('aPName').value.trim();
+  if(!name){ showToast('Product name is required.'); return; }
+  const price = parseInt(document.getElementById('aPPrice').value)||0;
+  const cat = document.getElementById('aPCat').value;
+  const badge = document.getElementById('aPBadge').value.trim();
+  const imgUrl = document.getElementById('aPImgUrl').value.trim();
+  const vidUrl = document.getElementById('aPVideoUrl').value.trim();
 
+  // 1. Generate a pristine product data node
+  const newProd = {
+    id: Date.now(), // Unique structural timestamp identification
+    name: name,
+    category: cat,
+    price: price,
+    badge: badge || '',
+    mode: 'day',
+    imgDay: imgUrl || 'https://images.unsplash.com/photo-1531266752426-aad472b7bbf4?auto=format&fit=crop&w=600&q=80', // Premium fallback
+    imgNight: '',
+    videoUrl: vidUrl || ''
+  };
+
+  // 2. Append directly to the live state variable array
+  products.unshift(newProd);
+
+  // 3. Clear out the Admin input form elements cleanly
+  ['aPName','aPPrice','aPBadge','aPImgUrl','aPVideoUrl'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  
+  const prev = document.getElementById('aPImgPreview');
+  if(prev){ prev.src = ''; prev.classList.remove('show'); }
+
+  // 4. Force UI refresh and execute an absolute save to IndexedDB & LocalStorage
+  applyFilters();
+  renderProductAdmin();
+  saveState(); 
+  
+  showToast(`"${name}" has been permanently added!`);
+}
 // ═══════════════════════════════════════════════════════════════════
 // ADMIN PANEL
 // ═══════════════════════════════════════════════════════════════════
