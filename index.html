@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Nairobi Fireworks Shop &amp; Events | Premium Nightlife Hub – Nairobi</title>
+<title>Miles High Fireworks &amp; Events | Premium Nightlife Hub – Nairobi</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -802,7 +802,26 @@ textarea.a-input{resize:vertical;min-height:52px}
         <input type="text" class="smart-url-field" id="editVideoUrl" placeholder="Paste video URL (.mp4)">
         <label class="smart-file-label"><input type="file" accept="video/*" onchange="handleSmartFile(this,'editVideoUrl',null,true)"><i class="fa-solid fa-paperclip"></i> Upload</label>
       </div>
+    function saveAdminProduct(){
+  const idx = parseInt(document.getElementById('ePIdx').value);
+  if(isNaN(idx) || idx < 0 || idx >= products.length) return;
+
+  const p = products[idx];
+  p.name = document.getElementById('ePName').value.trim();
+  p.price = parseInt(document.getElementById('ePPrice').value) || 0;
+  p.category = document.getElementById('ePCat').value;
+  p.badge = document.getElementById('ePBadge').value.trim();
+  p.imgDay = document.getElementById('ePImgUrl').value.trim();
+  p.videoUrl = document.getElementById('ePVideoUrl').value.trim();
+
+  products[idx] = p;
+  saveState();
+  renderAdminProducts();
+  closeAdminModal();
 }
+    </div>
+  </div>
+</div>
 
 <!-- BLOG READ MODAL -->
 <div class="blog-modal-overlay" id="blogModal" onclick="closeBlogModal(event)">
@@ -1701,8 +1720,7 @@ function closeOrderModal(e){ if(!e||e.target===document.getElementById('orderOve
 // EDIT MODAL
 // ═══════════════════════════════════════════════════════════════════
 async function openEditModal(id){
-  const p=products.find(x=>x.id===id);
-  if(!p) return;
+  const p=products.find(x=>x.id===id); if(!p) return;
   document.getElementById('editProdId').value=p.id;
   document.getElementById('editName').value=p.name;
   document.getElementById('editPrice').value=p.price;
@@ -1710,43 +1728,52 @@ async function openEditModal(id){
   document.getElementById('editBadge').value=p.badge||'';
   document.getElementById('editImgUrl').value=p.imgDay||'';
   document.getElementById('editVideoUrl').value=p.videoUrl||'';
-  
   const prev=document.getElementById('editImgPreview');
   if(p.imgDay){
     const src=await resolveSrc(p.imgDay);
-    if(src){
-      prev.src=src;
-      prev.classList.add('show');
-    } else prev.classList.remove('show');
+    if(src){ prev.src=src; prev.classList.add('show'); } else prev.classList.remove('show');
   } else prev.classList.remove('show');
-  
   document.getElementById('editOverlay').classList.add('open');
 }
+function addNewProduct(){
+  const name = document.getElementById('aPName').value.trim();
+  if(!name){ showToast('Product name is required.'); return; }
+  const price = parseInt(document.getElementById('aPPrice').value)||0;
+  const cat = document.getElementById('aPCat').value;
+  const badge = document.getElementById('aPBadge').value.trim();
+  const imgUrl = document.getElementById('aPImgUrl').value.trim();
+  const vidUrl = document.getElementById('aPVideoUrl').value.trim();
 
-function saveEditProduct(){
-  const id=parseInt(document.getElementById('editProdId').value);
-  const p=products.find(x=>x.id===id);
-  if(!p) return;
+  // 1. Generate a pristine product data node
+  const newProd = {
+    id: Date.now(), // Unique structural timestamp identification
+    name: name,
+    category: cat,
+    price: price,
+    badge: badge || '',
+    mode: 'day',
+    imgDay: imgUrl || 'https://images.unsplash.com/photo-1531266752426-aad472b7bbf4?auto=format&fit=crop&w=600&q=80', // Premium fallback
+    imgNight: '',
+    videoUrl: vidUrl || ''
+  };
 
-  p.name = document.getElementById('editName').value.trim() || p.name;
-  p.price = parseInt(document.getElementById('editPrice').value) || p.price;
-  p.category = document.getElementById('editCat').value;
-  p.badge = document.getElementById('editBadge').value.trim();
+  // 2. Append directly to the live state variable array
+  products.unshift(newProd);
 
-  const newImg = document.getElementById('editImgUrl').value.trim();
-  if(newImg) p.imgDay=newImg;
+  // 3. Clear out the Admin input form elements cleanly
+  ['aPName','aPPrice','aPBadge','aPImgUrl','aPVideoUrl'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  
+  const prev = document.getElementById('aPImgPreview');
+  if(prev){ prev.src = ''; prev.classList.remove('show'); }
 
-  p.videoUrl = document.getElementById('editVideoUrl').value.trim();
-
-  document.getElementById('editOverlay').classList.remove('open');
+  // 4. Force UI refresh and execute an absolute save to IndexedDB & LocalStorage
   applyFilters();
-  saveState();
-  showToast(`"${p.name}" updated!`);
-}
-
-function closeEditModal(e){
-  if(!e||e.target===document.getElementById('editOverlay')) 
-    document.getElementById('editOverlay').classList.remove('open');
+  renderProductAdmin();
+  saveState(); 
+  
+  showToast(`"${name}" has been permanently added!`);
 }
 // ═══════════════════════════════════════════════════════════════════
 // ADMIN PANEL
