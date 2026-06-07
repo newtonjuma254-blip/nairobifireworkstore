@@ -802,7 +802,37 @@ textarea.a-input{resize:vertical;min-height:52px}
         <input type="text" class="smart-url-field" id="editVideoUrl" placeholder="Paste video URL (.mp4)">
         <label class="smart-file-label"><input type="file" accept="video/*" onchange="handleSmartFile(this,'editVideoUrl',null,true)"><i class="fa-solid fa-paperclip"></i> Upload</label>
       </div>
-    function saveAdminProduct(){
+// 1. THIS HANDLES ADDING NEW PRODUCTS
+function addAdminProduct() {
+  const name = document.getElementById('aPName').value.trim();
+  if(!name){ showToast('Product name is required.'); return; }
+  const price = parseInt(document.getElementById('aPPrice').value) || 0;
+  const cat = document.getElementById('aPCat').value;
+  const badge = document.getElementById('aPBadge').value.trim();
+  const imgUrl = document.getElementById('aPImgUrl').value.trim();
+  const vidUrl = document.getElementById('aPVideoUrl').value.trim();
+
+  const newP = {
+    id: Date.now(),
+    name: name,
+    category: cat,
+    price: price,
+    badge: badge,
+    mode: 'day',
+    imgDay: imgUrl || 'https://images.unsplash.com/photo-1531266752426-aad472b7bbf4?w=500',
+    imgNight: '',
+    videoUrl: vidUrl
+  };
+
+  products.push(newP);
+  saveState();
+  renderAdminProducts();
+  closeAdminModal();
+  showToast(`"${name}" added successfully!`);
+}
+
+// 2. THIS HANDLES EDITING EXISTING PRODUCTS
+function saveAdminProduct() {
   const idx = parseInt(document.getElementById('ePIdx').value);
   if(isNaN(idx) || idx < 0 || idx >= products.length) return;
 
@@ -818,6 +848,8 @@ textarea.a-input{resize:vertical;min-height:52px}
   saveState();
   renderAdminProducts();
   closeAdminModal();
+  showToast('Product changes saved!');
+}
 }
     </div>
   </div>
