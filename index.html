@@ -700,7 +700,39 @@ img.img-error::after{content:'🎆';font-size:2rem;display:flex;align-items:cent
     right: 16px;            /* Keeps floating button inside safe viewport area */
   }
 }
+/* ── GAP 1: Admin dock tabs scroll on phones ── */
+@media (max-width: 480px) {
+  .dock-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .dock-tabs::-webkit-scrollbar { display: none; }
+  .dock-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
 
+/* ── GAP 2: Hero buttons full-width on tiny phones ── */
+@media (max-width: 400px) {
+  .btn-primary, .btn-ghost {
+    padding: 11px 18px;
+    font-size: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── GAP 3: Modals scroll properly on short phones ── */
+@media (max-width: 480px) {
+  .order-page, .edit-modal {
+    max-height: 85vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+  
 </style>
 </head>
 <body>
