@@ -3,9 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Miles High Fireworks & Events | Premium Nightlife Hub – Nairobi</title>
+<title>Nairobi Fireworks Stores | Premium Nightlife Hub – Nairobi</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"></noscript>
+<!-- ═══ FIREBASE ═══ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB_vikXLTrqhsM_Uijx26nab6tRd9lBj7c",
+    authDomain: "nairobifireworks.firebaseapp.com",
+    projectId: "nairobifireworks",
+    storageBucket: "nairobifireworks.firebasestorage.app",
+    messagingSenderId: "743752136841",
+    appId: "1:743752136841:web:fc987428ec80540336ee58",
+    measurementId: "G-WQ29731KY4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  window._firebaseApp = app;
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" crossorigin="anonymous" id="fa-fallback" disabled>
 <script>
@@ -47,7 +66,7 @@ header{position:sticky;top:0;z-index:120;background:rgba(5,5,8,.88);backdrop-fil
 .brand{display:flex;align-items:center;gap:10px}
 .brand-logo-img{width:34px;height:34px;border-radius:8px;object-fit:cover;display:none}
 .brand-icon{width:34px;height:34px;background:linear-gradient(135deg,#4c1d95,#7c3aed);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#c4b5fd}
-.brand-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(90deg,var(--violet2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.brand-name{font-family:'Syne',sans-serif;font-size:clamp(10px,2.5vw,13px);font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(90deg,var(--violet2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
 .hdr-right{display:flex;align-items:center;gap:12px}
 .admin-btn{background:var(--bg3);border:1px solid var(--border2);color:#9ca3af;font-size:11px;font-family:'DM Sans',sans-serif;padding:6px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
 .admin-btn:hover{background:#1a1a2e;color:var(--white);border-color:var(--violet)}
@@ -322,7 +341,7 @@ footer p{margin-bottom:4px}
 .dock-tab.active{color:var(--violet2);border-top-color:var(--violet2)}
 
 /* TAB PANES */
-.admin-panes{flex:1;overflow:visible;position:relative}
+.admin-panes{flex:1;overflow:hidden;position:relative}
 .admin-pane{position:absolute;inset:0;overflow-y:auto;padding:16px;display:none;flex-direction:column;gap:12px}
 .admin-pane.active{display:flex}
 
@@ -436,7 +455,7 @@ textarea.a-input{resize:vertical;min-height:52px}
 .modal-footer{padding:10px 18px;background:var(--bg3);font-size:11px;color:var(--muted);text-align:center;border-top:1px solid var(--border)}
 
 /* ── ORDER MODAL ── */
-.order-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:210;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.order-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
 .order-overlay.open{opacity:1;pointer-events:all}
 .order-page{width:100%;max-width:480px;background:var(--bg2);border:1px solid var(--border2);border-radius:20px;overflow:hidden;transform:translateY(28px) scale(.97);transition:transform .3s}
 .order-overlay.open .order-page{transform:translateY(0) scale(1)}
@@ -457,7 +476,7 @@ textarea.a-input{resize:vertical;min-height:52px}
 .order-note{font-size:11px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.5}
 
 /* ── EDIT PRODUCT MODAL ── */
-.edit-overlay{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:215;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.edit-overlay{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
 .edit-overlay.open{opacity:1;pointer-events:all}
 .edit-modal{width:100%;max-width:520px;background:var(--bg2);border:1px solid var(--border2);border-radius:18px;overflow:hidden;transform:translateY(24px);transition:transform .25s;max-height:90vh;overflow-y:auto}
 .edit-overlay.open .edit-modal{transform:translateY(0)}
@@ -681,7 +700,39 @@ img.img-error::after{content:'🎆';font-size:2rem;display:flex;align-items:cent
     right: 16px;            /* Keeps floating button inside safe viewport area */
   }
 }
+/* ── GAP 1: Admin dock tabs scroll on phones ── */
+@media (max-width: 480px) {
+  .dock-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .dock-tabs::-webkit-scrollbar { display: none; }
+  .dock-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
 
+/* ── GAP 2: Hero buttons full-width on tiny phones ── */
+@media (max-width: 400px) {
+  .btn-primary, .btn-ghost {
+    padding: 11px 18px;
+    font-size: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── GAP 3: Modals scroll properly on short phones ── */
+@media (max-width: 480px) {
+  .order-page, .edit-modal {
+    max-height: 85vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+  
 </style>
 </head>
 <body>
