@@ -3,9 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Miles High Fireworks & Events | Premium Nightlife Hub – Nairobi</title>
+<title>Nairobi Fireworks Stores | Premium Nightlife Hub – Nairobi</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"></noscript>
+<!-- ═══ FIREBASE ═══ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB_vikXLTrqhsM_Uijx26nab6tRd9lBj7c",
+    authDomain: "nairobifireworks.firebaseapp.com",
+    projectId: "nairobifireworks",
+    storageBucket: "nairobifireworks.firebasestorage.app",
+    messagingSenderId: "743752136841",
+    appId: "1:743752136841:web:fc987428ec80540336ee58",
+    measurementId: "G-WQ29731KY4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  window._firebaseApp = app;
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" crossorigin="anonymous" id="fa-fallback" disabled>
 <script>
