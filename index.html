@@ -5,6 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Miles High Fireworks &amp; Events | Premium Nightlife Hub – Nairobi</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+ <!-- ═══ FIREBASE ═══ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB_vikXLTrqhsM_Uijx26nab6tRd9lBj7c",
+    authDomain: "nairobifireworks.firebaseapp.com",
+    projectId: "nairobifireworks",
+    storageBucket: "nairobifireworks.firebasestorage.app",
+    messagingSenderId: "743752136841",
+    appId: "1:743752136841:web:fc987428ec80540336ee58",
+    measurementId: "G-WQ29731KY4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  window._firebaseApp = app; // makes it accessible to the rest of your scripts
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 /* ═══════════════════════════════════════════════════════════════════
@@ -571,7 +590,42 @@ textarea.a-input{resize:vertical;min-height:52px}
 
 /* ── KEYFRAMES ── */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes bounceS{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes bounceS{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}} 
+}          ← last closing brace of existing mobile block
+}            ← closes the @media block
+
+/* ── GAP 1: Admin dock tabs scroll on phones ── */
+@media (max-width: 480px) {
+  .dock-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .dock-tabs::-webkit-scrollbar { display: none; }
+  .dock-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+/* ── GAP 2: Hero buttons full-width on tiny phones ── */
+@media (max-width: 400px) {
+  .btn-primary, .btn-ghost {
+    padding: 11px 18px;
+    font-size: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── GAP 3: Modals scroll on short phones ── */
+@media (max-width: 480px) {
+  .order-page, .edit-modal {
+    max-height: 85vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
 </style>
 </head>
 <body>
